@@ -34,22 +34,22 @@ class ScaledDotProductAttention(nn.Module):
 
 class MultiHeadAttention(nn.Module):
     """
-    Implementation of the (Masked )Multi Head Attention Module from the
+    Implementation of the (Masked) Multi Head Attention Module from the
     "Attention Is All You Need" Paper
     """
-    def __init__(self, n_heads, dim_model, dim_q, dim_k, dim_v, mask):
+    def __init__(self, n_heads, d_embedding, mask):
         super(MultiHeadAttention, self).__init__()
         self.n_heads = n_heads
-        self.dim_model = dim_model
-        self.dims_at_hand = dim_model // n_heads
+        self.d_embedding = d_embedding
+        self.dims_at_hand = d_embedding // n_heads
 
-        self.q_linear = nn.Linear(dim_q, dim_model)
-        self.k_linear = nn.Linear(dim_k, dim_model)
-        self.v_linear = nn.Linear(dim_v, dim_model)
+        self.q_linear = nn.Linear(d_embedding, d_embedding)
+        self.k_linear = nn.Linear(d_embedding, d_embedding)
+        self.v_linear = nn.Linear(d_embedding, d_embedding)
 
-        self.attention = ScaledDotProductAttention(dim_model, mask=mask)
+        self.attention = ScaledDotProductAttention(d_embedding, mask=mask)
 
-        self.ln4 = nn.Linear(dim_model, dim_model)
+        self.ln4 = nn.Linear(d_embedding, d_embedding)
 
     def forward(self, query, key, value):
         #Linearly Project the q, k and v first
@@ -69,7 +69,7 @@ class MultiHeadAttention(nn.Module):
         attention_scores = self.attention(query, key, value)
 
         #concat the attention scores across the n_heads 
-        attention_scores = attention_scores.transpose(-1, -2).contiguous().view(batch_size, -1, self.dim_model)
+        attention_scores = attention_scores.transpose(-1, -2).contiguous().view(batch_size, -1, self.d_embedding)
 
         attention_scores = self.ln4(attention_scores)
         
@@ -81,6 +81,6 @@ if __name__ == '__main__':
     value = torch.rand(1, 10, 512, device="cpu")
     dim_q = query.shape[-1]
     dim_v = value.shape[-1]
-    attention = MultiHeadAttention(8,dim_q, dim_q, dim_q, dim_v, mask=True)
+    attention = MultiHeadAttention(8, dim_q, mask=True)
     x = attention(query, key, value)
     print(x)
