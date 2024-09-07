@@ -2,6 +2,10 @@ import torch.nn as nn
 from feed_forward import FeedForward
 
 class FeedForwardBlock(nn.Module):
+    """ 
+    Feed Forward Block containing the skip connection 
+    and the Layer normalization
+    """
     def __init__(self, x, d_model, d_ff):
         super(FeedForwardBlock, self).__init__()
         self.norm = nn.LayerNorm()
