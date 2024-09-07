@@ -20,17 +20,15 @@ class ScaledDotProductAttention(nn.Module):
         
         #Mask the future tokens (tokens above the diagonal) (relevant for the decoder)
         if self.mask:
-            inf_matrix = torch.ones(q_k_matmul.shape) * float('-inf')
+            inf_matrix = torch.ones(q_k_matmul.shape) * -1e9
             mask_matrix = torch.triu(inf_matrix, diagonal=1)
             q_k_matmul = q_k_matmul + mask_matrix
 
         #scale the dot product with the inverse of the key dimension
         q_k_matmul = torch.div(q_k_matmul, math.sqrt(self.dim_k))
 
-        #q_k_matmul = q_k_matmul.apply_(lambda x: x / torch.sqrt(torch.tensor(self.dk)))
         q_k_softmax = F.softmax(q_k_matmul, dim=-1)
         x = torch.matmul(q_k_softmax, values)
-
         return x
 
 
@@ -39,7 +37,7 @@ class MultiHeadAttention(nn.Module):
     Implementation of the (Masked )Multi Head Attention Module from the
     "Attention Is All You Need" Paper
     """
-    def __init__(self, n_heads, dim_model, dim_q, dim_k, dim_v, mask=False):
+    def __init__(self, n_heads, dim_model, dim_q, dim_k, dim_v, mask):
         super(MultiHeadAttention, self).__init__()
         self.n_heads = n_heads
         self.dim_model = dim_model
@@ -83,6 +81,6 @@ if __name__ == '__main__':
     value = torch.rand(1, 10, 512, device="cpu")
     dim_q = query.shape[-1]
     dim_v = value.shape[-1]
-    attention = MultiHeadAttention(8,dim_q, dim_q, dim_q, dim_v)
+    attention = MultiHeadAttention(8,dim_q, dim_q, dim_q, dim_v, mask=True)
     x = attention(query, key, value)
     print(x)
