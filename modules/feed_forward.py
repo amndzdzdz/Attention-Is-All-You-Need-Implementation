@@ -8,7 +8,7 @@ class FeedForward(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = self.fc(1)
+        x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)
         return x
