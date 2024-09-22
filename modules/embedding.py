@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from feed_forward import FeedForward
-from utils import preprocess_input
+from modules.feed_forward import FeedForward
+from modules.utils import preprocess_input
 
 class EmbeddingLayer(nn.Module):
     """

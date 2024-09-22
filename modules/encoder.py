@@ -1,15 +1,18 @@
 import torch
 import torch.nn as nn
-from attention import MultiHeadAttention
-from feed_forward import FeedForward
-from add_and_norm import AddAndNorm
+from modules.attention import MultiHeadAttention
+from modules.feed_forward import FeedForward
+from modules.add_and_norm import AddAndNorm
 
 class Encoder(nn.Module):
-    def __init__(self, d_embedding):
+    """
+    The Encoder only processes only the source sentence and produces the attention vectors 
+    """
+    def __init__(self, d_model):
         super(Encoder, self).__init__()
-        self.multiHeadAttention = MultiHeadAttention(n_heads=8, d_embedding=d_embedding, mask=False)
-        self.addAndNorm = AddAndNorm(d_embedding)
-        self.feedFoward = FeedForward(d_model=d_embedding, d_ff=2048)
+        self.multiHeadAttention = MultiHeadAttention(n_heads=8, d_model=d_model, mask=False)
+        self.addAndNorm = AddAndNorm(d_model)
+        self.feedFoward = FeedForward(d_model=d_model, d_ff=2048)
 
     def forward(self, x):
         identity1 = x
@@ -24,6 +27,6 @@ class Encoder(nn.Module):
 
 if __name__ == '__main__':
     dummy_embedding = torch.rand(2, 10, 512)
-    d_embedding = dummy_embedding.shape[-1]
-    encoder = Encoder(d_embedding=d_embedding)
+    d_model = dummy_embedding.shape[-1]
+    encoder = Encoder(d_model=d_model)
     encoder(dummy_embedding)

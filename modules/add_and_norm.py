@@ -1,5 +1,5 @@
 import torch.nn as nn
-from feed_forward import FeedForward
+from modules.feed_forward import FeedForward
 
 class AddAndNorm(nn.Module):
     """
