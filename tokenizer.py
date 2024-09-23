@@ -17,7 +17,7 @@ def train_tokenizer(seq_len):
     tokenizer.pre_tokenizer = WhitespaceSplit()
 
     def data_iterator(train_data, test_data, val_data):
-        for data_set in [train_data, test_data, val_data]:
+        for data_set in [val_data]:
             for row in data_set:
                 yield row["translation.de"]
             for row in data_set:
@@ -32,10 +32,11 @@ def train_tokenizer(seq_len):
         ("[</s>]", 3),
     ])
     tokenizer.enable_padding(pad_id=4, pad_token="[PAD]", length=seq_len)
+    tokenizer.enable_truncation(max_length=seq_len)
     tokenizer.save("tokenizer_checkpoint/tokenizer_checkpoint.json")
 
 def load_tokenizer(check_point):
     return Tokenizer.from_file(check_point)
 
 if __name__ == '__main__':
-    train_tokenizer(128)
+    train_tokenizer(5)
